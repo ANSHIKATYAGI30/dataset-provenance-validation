@@ -1,0 +1,45 @@
+
+{
+  "dataset": {
+    "name": "Iris",
+    "creator": "R. A. Fisher",
+    "source": "https://archive.ics.uci.edu/dataset/53/iris",
+    "citation": "Fisher, R. (1936). Iris. UCI Machine Learning Repository.",
+    "doi": "10.24432/C56C76",
+    "license": "CC BY 4.0",
+    "version": {
+      "status": "unversioned",
+      "description": "Locally downloaded UCI iris.data snapshot",
+      "immutable_version_id": null
+    }
+  },
+  "input": {
+    "path": "data/iris.data",
+    "format": "csv",
+    "has_header": false,
+    "encoding": "utf-8",
+    "sha256": "6f608b71a7317216319b4d27b4d9bc84e6abd734eda7872b71a458569e2656c0",
+    "expected_size_bytes": 4551,
+    "expected_records": 150
+  },
+  "schema": [
+    {"name": "sepal_length", "type": "float", "required": true},
+    {"name": "sepal_width", "type": "float", "required": true},
+    {"name": "petal_length", "type": "float", "required": true},
+    {"name": "petal_width", "type": "float", "required": true},
+    {"name": "class", "type": "string", "required": true}
+  ],
+  "row_identity": {
+    "method": "source_record_ordinal",
+    "description": "One-based record position in the checksum-verified source file",
+    "stable_across_reordering": false
+  },
+  "duplicate_policy": {
+    "grouping": "Exact match across all five parsed field values",
+    "action": "Report duplicate groups; never silently remove records"
+  },
+  "missing_data_policy": {
+    "required_fields": "All five fields must be present and non-empty",
+    "action": "Report missing values and fail validation; do not impute or drop rows"
+  }
+}
