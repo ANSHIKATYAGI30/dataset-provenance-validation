@@ -103,3 +103,13 @@ Implemented a dataset provenance and validation workflow using the UCI Iris data
 - Duplicate-record fixture: **PASS** — duplicate input correctly rejected.
 
 The source dataset contains exact duplicate records, which are reported as warnings rather than automatically removed.
+
+## Scope and Split Policy
+
+This package is **unsplit and validation-only**. It validates the provenance and structure of the source dataset and checks deliberately invalid test fixtures. It does not create training, validation, or test partitions, and it does not train or evaluate a model.
+
+The source dataset is retained in its original order. Exact duplicate records are reported and are not silently removed or modified.
+
+If a research split is introduced in a future revision, the assignment rule and proportions should be defined in advance, and exact-duplicate groups should remain within the same partition.
+
+**Limitation:** Exact-duplicate grouping alone cannot rule out broader related-sample leakage. The dataset does not provide subject identifiers that would establish whether different-looking records are related. This package does not claim to guarantee a leakage-free research split.
