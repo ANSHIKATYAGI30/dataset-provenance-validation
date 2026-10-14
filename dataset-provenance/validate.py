@@ -32,13 +32,16 @@ def validate(
     manifest,
     label="SOURCE",
     strict_duplicates=False,
-    check_source_integrity=True
+    check_source_integrity=True,
+    error_codes=None
 ):
     errors = []
     warnings = []
 
-    def error(message):
+    def error(message, code="validation_error"):
         errors.append(message)
+        if error_codes is not None:
+            error_codes.append(code)
         print(f"FAIL [{label}] {message}")
 
     def warning(message):
@@ -133,7 +136,8 @@ def validate(
             if field["required"] and not value:
                 error(
                     f"Line {line_number}: required field "
-                    f"'{field['name']}' is missing."
+                    f"'{field['name']}' is missing.",
+                    code="missing_required"
                 )
 
             if not value:
@@ -170,7 +174,7 @@ def validate(
             message = f"Exact duplicate records at source lines {lines}."
 
             if strict_duplicates:
-                error(message)
+                error(message, code="duplicate_records")
             else:
                 warning(message)
     else:
@@ -205,12 +209,17 @@ def main():
         label="SOURCE"
     )
 
+    # Negative fixtures must fail for their intended defects.
+    missing_codes = []
+    duplicate_codes = []
+
     # Test 2: A required value is deliberately missing.
     missing_ok = validate(
         ROOT / "fixtures" / "missing.csv",
         manifest,
         label="MISSING FIXTURE",
-        check_source_integrity=False
+        check_source_integrity=False,
+        error_codes=missing_codes
     )
 
     # Test 3: An identical record is deliberately duplicated.
@@ -219,15 +228,25 @@ def main():
         manifest,
         label="DUPLICATE FIXTURE",
         strict_duplicates=True,
-        check_source_integrity=False
+        check_source_integrity=False,
+        error_codes=duplicate_codes
+    )
+
+    missing_rejected_as_expected = (
+        not missing_ok and bool(missing_codes)
+        and set(missing_codes) == {"missing_required"}
+    )
+    duplicate_rejected_as_expected = (
+        not duplicate_ok and bool(duplicate_codes)
+        and set(duplicate_codes) == {"duplicate_records"}
     )
 
     print("\n========== TEST SUMMARY ==========")
     print(f"Source dataset passes: {source_ok}")
-    print(f"Missing fixture rejected: {not missing_ok}")
-    print(f"Duplicate fixture rejected: {not duplicate_ok}")
+    print(f"Missing fixture rejected for missing values: {missing_rejected_as_expected}")
+    print(f"Duplicate fixture rejected for duplicates: {duplicate_rejected_as_expected}")
 
-    if source_ok and not missing_ok and not duplicate_ok:
+    if source_ok and missing_rejected_as_expected and duplicate_rejected_as_expected:
         print("\nALL VALIDATION TESTS PASSED")
         return 0
 

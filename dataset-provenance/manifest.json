@@ -41,5 +41,13 @@
   "missing_data_policy": {
     "required_fields": "All five fields must be present and non-empty",
     "action": "Report missing values and fail validation; do not impute or drop rows"
-  }
+  },
+  "split_policy": {
+  "status": "unsplit_validation_only",
+  "partitions_created": false,
+  "training_or_evaluation_performed": false,
+  "source_order": "Preserve checksum-verified source order; do not drop, repair, shuffle, or deduplicate records.",
+  "future_grouping_requirement": "If a later study defines partitions, keep exact-duplicate groups within one partition and define assignment rules and proportions in advance.",
+  "known_limit": "No subject identifiers are available. Exact-duplicate grouping cannot rule out broader related-sample leakage. This validator does not establish a leakage-free research split."
+}
 }
